@@ -1,0 +1,27 @@
+import string
+
+def analiza(tekst):
+    text = text.translate(str.maketrans('', '', string.punctuation)).lower()
+
+    words = text.split()
+
+    num_words = len(words)
+
+    num_chars = len(text)
+
+    word_count = {}
+    for word in words:
+        if word in word_count:
+            word_count[word] += 1
+        else:
+            word_count[word] = 1
+
+    return (num_words, num_chars, word_count)
+
+tekst = "To jest przykładowy tekst. Tekst ten służy do demonstracji programu analizującego tekst."
+
+stats = analiza(tekst)
+
+print("Liczba słów:", stats[0])
+print("Liczba znaków:", stats[1])
+print("Liczba wystąpień poszczególnych słów:", stats[2])

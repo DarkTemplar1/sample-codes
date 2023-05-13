@@ -1,0 +1,53 @@
+import random
+
+def wisielec(slowo,proby):
+    print("Witaj w grze ")
+    guessed_letters = set()
+    
+    while True:
+        masked_word = "".join([letter if letter in guessed_letters else "-" for letter in slowo])
+        print(f"Slowo: {masked_word}")
+        print(f"Pozostalo prob: {proby}")
+        
+        letter = input("Podaj litere: ").lower()
+        
+        if letter in guessed_letters:
+            print("Ta litera już byla odgadnieta!")
+            continue
+        
+        guessed_letters.add(letter)
+        
+        if letter in slowo:
+            print("Ta litera wystepuje w slowie!")
+        else:
+            print("Nie ma takiej litery w slowie.")
+            proby -= 1
+        
+        if set(slowo) == guessed_letters:
+            print(f"Brawo, odgadles slowo '{slowo}'!")
+            break
+        
+        if proby == 0:
+            print("Przegrales! Slowo to:", slowo)
+            break
+
+
+proby = int(input("Podaj liczbe prob od 5 do 10: "))
+
+word_lengths = {5: ['pique','stomp','chive','flaky','lunge','scowl','swish','tepee','twirl','whack'],
+                6: ['marvel','violet','thanks','stolen','planet','winter','yellow','silver','statue','liquid'],
+                7: ['banana','capital','culture','freedom','journey','network','payment','protein','seaside','village'],
+                8: ['fireplace','butterfly','decision','remember','elephant','laughter','tomorrow','keyboard','mountain','shopping'],
+                9: ['Abandoned','Brilliant','Courageous','Discourse','Ephemeral','Fragility','Glamorous','Humankind','Incumbent','Juxtapose'],
+                10:['Absorbency','Caffeinated','Decorators','Embankment','Freckliest','Ghostwrite','Impeccable','Kettledrum','Luminosity','Marmalades']}
+
+while True:
+    word_length = int(input("Podaj dlugosc slowa od 5 do 10: "))
+    if word_length in word_lengths:
+        slowo = random.choice(word_lengths[word_length])
+        break
+    else:
+        print("Nieprawidlowa dlugosc slowa. Sprobuj ponownie.")
+
+proby += 1
+wisielec(slowo, proby)

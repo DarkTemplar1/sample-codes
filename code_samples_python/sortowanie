@@ -1,0 +1,246 @@
+import random
+import string 
+import sys
+import math
+from bisect import bisect_left
+"Sortowanie bąbelkowe (Bubble Sort)"
+def bubble_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        for j in range(n-i-1):
+            if arr[j] > arr[j+1]:
+                arr[j], arr[j+1] = arr[j+1], arr[j]
+    return arr
+"Sortowanie przez wybieranie (Selection Sort)"
+def selection_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        min_idx = i
+        for j in range(i+1, n):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+        arr[i], arr[min_idx] = arr[min_idx], arr[i]
+    return arr
+"Sortowanie przez wstawianie (Insertion Sort)"
+def insertion_sort(arr):
+    n = len(arr)
+    for i in range(1, n):
+        key = arr[i]
+        j = i-1
+        while j >= 0 and key < arr[j]:
+            arr[j+1] = arr[j]
+            j -= 1
+        arr[j+1] = key
+    return arr
+"Sortowanie przez scalanie (Merge Sort)"
+def merge_sort(arr):
+    if len(arr) > 1:
+        mid = len(arr)//2
+        L = arr[:mid]
+        R = arr[mid:]
+        merge_sort(L)
+        merge_sort(R)
+        i = j = k = 0
+        while i < len(L) and j < len(R):
+            if L[i] < R[j]:
+                arr[k] = L[i]
+                i += 1
+            else:
+                arr[k] = R[j]
+                j += 1
+            k += 1
+        while i < len(L):
+            arr[k] = L[i]
+            i += 1
+            k += 1
+        while j < len(R):
+            arr[k] = R[j]
+            j += 1
+            k += 1
+    return arr
+"Sortowanie szybkie (Quick Sort)"
+def quick_sort(arr):
+    if len(arr) <= 1:
+        return arr
+    pivot = arr[len(arr)//2]
+    left = [x for x in arr if x < pivot]
+    middle = [x for x in arr if x == pivot]
+    right = [x for x in arr if x > pivot]
+    return quick_sort(left) + middle + quick_sort(right)
+"Sortowanie kubełkowe (Bucket Sort)"
+def bucket_sort(arr, bucket_size=5):
+    if len(arr) == 0:
+        return arr
+    min_val, max_val = min(arr), max(arr)
+    bucket_count = (max_val - min_val) // bucket_size + 1
+    buckets = [[] for _ in range(bucket_count)]
+    for num in arr:
+        buckets[(num - min_val) // bucket_size].append(num)
+    result = []
+    for bucket in buckets:
+        result.extend(sorted(bucket))
+    return result
+"Sortowanie przez zliczanie (Counting Sort)"
+def counting_sort(arr):
+    k = max(arr) + 1
+    count = [0] * k
+    for num in arr:
+        count[num] += 1
+    for i in range(1, k):
+        count[i] += count[i-1]
+    result = [0] * len(arr)
+    for num in arr:
+        result[count[num]-1] = num
+        count[num] -= 1
+    return result
+"Sortowanie przez kopcowanie (Heap Sort)"
+def heapify(arr, n, i):
+    largest = i
+    l = 2 * i + 1
+    r = 2 * i + 2
+    if l < n and arr[i] < arr[l]:
+        largest = l
+    if r < n and arr[largest] < arr[r]:
+        largest = r
+    if largest != i:
+        arr[i], arr[largest] = arr[largest], arr[i]
+        heapify(arr, n, largest)
+
+def heap_sort(arr):
+    n = len(arr)
+    for i in range(n // 2 - 1, -1, -1):
+        heapify(arr, n, i)
+    for i in range(n - 1, 0, -1):
+        arr[i], arr[0] = arr[0], arr[i]
+        heapify(arr, i, 0)
+    return arr
+
+"Sortowanie przez wymianę (Exchange Sort)"
+def exchange_sort(arr):
+    n = len(arr)
+    for i in range(n):
+        for j in range(i+1, n):
+            if arr[i] > arr[j]:
+                arr[i], arr[j] = arr[j], arr[i]
+    return arr
+"Sortowanie Shella (Shell Sort)"
+def shell_sort(arr):
+    n = len(arr)
+    gap = n // 2
+    while gap > 0:
+        for i in range(gap, n):
+            temp = arr[i]
+            j = i
+            while j >= gap and arr[j-gap] > temp:
+                arr[j] = arr[j-gap]
+                j -= gap
+            arr[j] = temp
+        gap //= 2
+    return arr
+"Sortowanie przez kartki (Patience Sort)"
+def patience_sort(arr):
+    piles = []
+    for x in arr:
+        new_pile = [x]
+        i = bisect_left(piles, new_pile)
+        if i != len(piles):
+            piles[i].append(x)
+        else:
+            piles.append(new_pile)
+    result = []
+    while piles:
+        small_pile = piles[0]
+        result.append(small_pile.pop(0))
+        if not small_pile:
+            piles.pop(0)
+        else:
+            i = bisect_left(piles, small_pile)
+            if i != len(piles):
+                piles[i].append(small_pile.pop(0))
+    return result
+"Sortowanie przez przesiewanie (Radix Sort)"
+def radix_sort(arr):
+    max_num = max(arr)
+    exp = 1
+    while max_num // exp > 0:
+        buckets = [[] for _ in range(10)]
+        for num in arr:
+            buckets[(num // exp) % 10].append(num)
+        arr = []
+        for bucket in buckets:
+            arr.extend(bucket)
+        exp *= 10
+    return arr
+"Sortowanie introspektywne (Introspective Sort)"
+def introsort(arr):
+    def introsort_helper(arr, depth_limit):
+        n = len(arr)
+        if n <= 1:
+            return
+        elif depth_limit == 0:
+            heap_sort(arr)
+        else:
+            pivot = median_of_three(arr)
+            i = partition(arr, pivot)
+            introsort_helper(arr[:i], depth_limit-1)
+            introsort_helper(arr[i:], depth_limit-1)
+
+    def median_of_three(arr):
+        first, middle, last = arr[0], arr[len(arr)//2], arr[-1]
+        return sorted([first, middle, last])[1]
+
+    def partition(arr, pivot):
+        i = 0
+        for j in range(len(arr)):
+            if arr[j] < pivot:
+                arr[i], arr[j] = arr[j], arr[i]
+                i += 1
+        return i
+
+    def heapify(arr, n, i):
+        largest = i
+        l = 2 * i + 1
+        r = 2 * i + 2
+        if l < n and arr[i] < arr[l]:
+            largest = l
+        if r < n and arr[largest] < arr[r]:
+            largest = r
+        if largest != i:
+            arr[i], arr[largest] = arr[largest], arr[i]
+            heapify(arr, n, largest)
+
+    def heap_sort(arr):
+        n = len(arr)
+        for i in range(n // 2 - 1, -1, -1):
+            heapify(arr, n, i)
+        for i in range(n - 1, 0, -1):
+            arr[i], arr[0] = arr[0], arr[i]
+            heapify(arr, i, 0)
+
+    depth_limit = math.floor(math.log(sys.maxsize, 2))
+    introsort_helper(arr, depth_limit)
+"print że wybierz opcje i poniżej rozpisz dalej rzeczy "
+def sort_switch(case, arr):
+    switcher = {
+        1: bubble_sort,
+        2: selection_sort,
+        3: insertion_sort,
+        4: merge_sort,
+        5: quick_sort,
+        6: bucket_sort,
+        7: counting_sort,
+        8: heap_sort,
+        9: exchange_sort,
+        10: shell_sort,
+        11: patience_sort,
+        12: radix_sort,
+        13: introsort
+    }
+    func = switcher.get(case, lambda: "Invalid choice")
+    sorted_arr = func(arr)
+    print("Sorted array:", sorted_arr)
+    
+arr = [64, 34, 25, 12, 22, 11, 90]
+print("Original array:", arr)
+case = 5 # wybierz liczbę odpowiadającą wybranej metodzie sortowania
+sort_switch(case, arr)
